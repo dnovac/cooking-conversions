@@ -31,6 +31,11 @@ type LiquidMeasure struct {
 	//todo: add also ml
 }
 
+// -----------------------------------------------------------------
+
+type CookingConvertor struct {
+}
+
 // metric from https://www.thecalculatorsite.com/cooking/cooking-calculator.php
 type Unit string
 
@@ -49,16 +54,18 @@ const (
 	Teaspoons        = "tsp"
 )
 
-func convert(value int) {
-	//todo add a function to convert the value
+func (conversion CookingConvertor) convert(value float32) CookingConvertor {
+	fmt.Printf("Convert the value of %f \n", value)
+	return conversion
 }
 
-func from(value Unit) {
-	//todo add a function to convert the value
+func (conversion CookingConvertor) from(fromVal Unit) CookingConvertor {
+	fmt.Printf("from %s \n", fromVal)
+	return conversion
 }
 
-func to(value Unit) {
-	//todo add a function to convert the value
+func (conversion CookingConvertor) to(toVal Unit) {
+	fmt.Printf("to %s \n", toVal)
 }
 
 //todo in the end should look like convert(5).from(Cups).to(Kg)
@@ -148,11 +155,15 @@ func handleRequests() {
 
 // Start the web server
 func main() {
-	fmt.Println("***** REST API - Cooking Conversion v1.0 *****")
+	fmt.Println("***** REST API - Cooking CookingConvertor v1.0 *****")
 	DryMeasures = []DryMeasure{
 		DryMeasure{Id: "0", Cups: 1, Tablespoons: 1, Teaspoons: 1, Grams: 5},
 		DryMeasure{Id: "1", Cups: 1, Tablespoons: 2, Teaspoons: 2, Grams: 10},
 	}
+
+	//this could represent the whole lib
+	var conversion CookingConvertor
+	conversion.convert(88.9).from("g").to("ml")
 
 	handleRequests()
 
