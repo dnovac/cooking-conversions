@@ -31,6 +31,38 @@ type LiquidMeasure struct {
 	//todo: add also ml
 }
 
+// metric from https://www.thecalculatorsite.com/cooking/cooking-calculator.php
+type Unit string
+
+const (
+	Cups        Unit = "cups"
+	Gallons          = "gal"
+	Grams            = "g"
+	Kilograms        = "kg"
+	Liters           = "l"
+	Milliliters      = "ml"
+	Deciliters       = "dl"
+	Ounces           = "oz"
+	Pounds           = "lb"
+	Pints            = "pt"
+	Tablespoons      = "tbsp"
+	Teaspoons        = "tsp"
+)
+
+func convert(value int) {
+	//todo add a function to convert the value
+}
+
+func from(value Unit) {
+	//todo add a function to convert the value
+}
+
+func to(value Unit) {
+	//todo add a function to convert the value
+}
+
+//todo in the end should look like convert(5).from(Cups).to(Kg)
+
 /**
 ************
  */
