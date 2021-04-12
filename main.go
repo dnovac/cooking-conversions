@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -58,22 +59,37 @@ const (
 )
 
 //todo try to send the cookingConvertor as pointer *CookingConvertor, otherwise it's a copy
-func (conversion *CookingConvertor) Convert(value float32) *CookingConvertor {
-	fmt.Printf("Convert the value of %f \n", value)
-	conversion.quantity = value
-	return conversion
+func (converter *CookingConvertor) Convert() (*CookingConvertor, error) {
+	fmt.Printf("Convert the value of %f \n", converter.quantity)
+
+	if err := converter.toUnit.IsValid(); err != nil {
+		return nil, err
+	}
+	if err := converter.fromUnit.IsValid(); err != nil {
+		return nil, err
+	}
+
+	return converter, nil
 }
 
-func (conversion *CookingConvertor) From(fromVal Unit) *CookingConvertor {
+func (unit Unit) IsValid() error {
+	switch unit {
+	case Cups, Gallons, Grams, Kilograms, Liters, Tablespoons, Milliliters, Teaspoons:
+		return nil
+	}
+	return errors.New("invalid conversion unit type")
+}
+
+func (converter *CookingConvertor) From(fromVal Unit) *CookingConvertor {
 	fmt.Printf("from %s \n", fromVal)
-	conversion.fromUnit = fromVal
-	return conversion
+	converter.fromUnit = fromVal
+	return converter
 }
 
-func (conversion *CookingConvertor) To(toVal Unit) *CookingConvertor {
+func (converter *CookingConvertor) To(toVal Unit) *CookingConvertor {
 	fmt.Printf("to %s \n", toVal)
-	conversion.toUnit = toVal
-	return conversion
+	converter.toUnit = toVal
+	return converter
 }
 
 //todo in the end should look like convert(5).from(Cups).to(Kg)
@@ -153,7 +169,7 @@ func handleRequests() {
 	var router = mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", homePage)
-	router.HandleFunc("/dryes", getAllDryMeasures)
+	router.HandleFunc("/dries", getAllDryMeasures)
 	router.HandleFunc("/dry", createNewDryMeasure).Methods("POST")
 	router.HandleFunc("/dry/{id}", deleteDryMeasureById).Methods("DELETE") //this has to be defined before the other /dry/{id}
 	router.HandleFunc("/dry/{id}", getAllDryMeasuresById)                  // just for the sake of example for now
@@ -170,8 +186,11 @@ func main() {
 	}
 
 	//this could represent the whole lib
-	var conversion CookingConvertor
-	conversion.Convert(858.9).From("g").To("ml")
+	var converter = CookingConvertor{quantity: 1, fromUnit: Cups, toUnit: Tablespoons}
+	_, _ = converter.Convert()
+
+	// converter.Convert(858.9).From("g").To("ml")
+	//converter.From("tbsp").To("c").Convert(1)
 
 	handleRequests()
 
