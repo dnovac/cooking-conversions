@@ -34,6 +34,9 @@ type LiquidMeasure struct {
 // -----------------------------------------------------------------
 
 type CookingConvertor struct {
+	quantity float32
+	fromUnit Unit
+	toUnit   Unit
 }
 
 // metric from https://www.thecalculatorsite.com/cooking/cooking-calculator.php
@@ -54,18 +57,23 @@ const (
 	Teaspoons        = "tsp"
 )
 
-func (conversion CookingConvertor) convert(value float32) CookingConvertor {
+//todo try to send the cookingConvertor as pointer *CookingConvertor, otherwise it's a copy
+func (conversion *CookingConvertor) Convert(value float32) *CookingConvertor {
 	fmt.Printf("Convert the value of %f \n", value)
+	conversion.quantity = value
 	return conversion
 }
 
-func (conversion CookingConvertor) from(fromVal Unit) CookingConvertor {
+func (conversion *CookingConvertor) From(fromVal Unit) *CookingConvertor {
 	fmt.Printf("from %s \n", fromVal)
+	conversion.fromUnit = fromVal
 	return conversion
 }
 
-func (conversion CookingConvertor) to(toVal Unit) {
+func (conversion *CookingConvertor) To(toVal Unit) *CookingConvertor {
 	fmt.Printf("to %s \n", toVal)
+	conversion.toUnit = toVal
+	return conversion
 }
 
 //todo in the end should look like convert(5).from(Cups).to(Kg)
@@ -163,7 +171,7 @@ func main() {
 
 	//this could represent the whole lib
 	var conversion CookingConvertor
-	conversion.convert(88.9).from("g").to("ml")
+	conversion.Convert(858.9).From("g").To("ml")
 
 	handleRequests()
 
