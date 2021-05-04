@@ -58,23 +58,37 @@ const (
 	Teaspoons        = "tsp"
 )
 
-//todo try to send the cookingConvertor as pointer *CookingConvertor, otherwise it's a copy
-func (converter *CookingConvertor) Convert() (*CookingConvertor, error) {
-	fmt.Printf("Convert the value of %f \n", converter.quantity)
+func (converter *CookingConvertor) Convert() (float32, error) {
+	quantity := converter.quantity
+	fmt.Printf("Convert the value of %f \n", quantity)
 
 	if err := converter.toUnit.IsValid(); err != nil {
-		return nil, err
+		return -1, err
 	}
 	if err := converter.fromUnit.IsValid(); err != nil {
-		return nil, err
+		return -1, err
 	}
 
-	return converter, nil
+	// for now:only convert -> toUnit grams
+	switch converter.fromUnit {
+	case Cups:
+		return quantity * 240, nil
+	case Kilograms:
+		return quantity * 1000, nil
+	case Ounces:
+		return quantity * 28.349, nil
+	case Tablespoons:
+		return quantity * 17.07, nil
+	case Teaspoons:
+		return quantity * 5.69, nil
+	}
+
+	return quantity, nil
 }
 
 func (unit Unit) IsValid() error {
 	switch unit {
-	case Cups, Gallons, Grams, Kilograms, Liters, Tablespoons, Milliliters, Teaspoons:
+	case Cups, Gallons, Grams, Kilograms, Liters, Tablespoons, Milliliters, Teaspoons, Ounces:
 		return nil
 	}
 	return errors.New("invalid conversion unit type")
@@ -186,11 +200,21 @@ func main() {
 	}
 
 	//this could represent the whole lib
-	var converter = CookingConvertor{quantity: 1, fromUnit: Cups, toUnit: Tablespoons}
-	_, _ = converter.Convert()
-
-	// converter.Convert(858.9).From("g").To("ml")
-	//converter.From("tbsp").To("c").Convert(1)
+	var converterCups = CookingConvertor{quantity: 1, fromUnit: Cups, toUnit: Grams}
+	var converterKg = CookingConvertor{quantity: 1, fromUnit: Kilograms, toUnit: Grams}
+	var converterOz = CookingConvertor{quantity: 1, fromUnit: Ounces, toUnit: Grams}
+	var converterTbsp = CookingConvertor{quantity: 1, fromUnit: Tablespoons, toUnit: Grams}
+	var converterTsp = CookingConvertor{quantity: 1, fromUnit: Teaspoons, toUnit: Grams}
+	cups, _ := converterCups.Convert()
+	kg, _ := converterKg.Convert()
+	oz, _ := converterOz.Convert()
+	tbsp, _ := converterTbsp.Convert()
+	tsp, _ := converterTsp.Convert()
+	fmt.Printf("%f grams \n", cups)
+	fmt.Printf("%f grams \n", kg)
+	fmt.Printf("%f grams \n", oz)
+	fmt.Printf("%f grams \n", tbsp)
+	fmt.Printf("%f grams \n", tsp)
 
 	handleRequests()
 
